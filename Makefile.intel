@@ -1,0 +1,34 @@
+# module load intel/oneapi/compiler intel/oneapi/mkl intel/oneapi/mpi
+SHELL = bash
+FC := mpiifort
+FCLINKER := $(FC)
+# VERSION := Debug
+VERSION := Release
+ifeq ("$(shell echo $(VERSION) | tr a-z A-Z)", "DEBUG")
+	OPTS := -g
+	OPTLV := -O0
+else
+	OPTS := -s
+	OPTLV := -O2
+endif
+SCALAPACK_LIB := -qmkl=cluster
+
+.PHONY: all
+all: test.intel.x
+
+test.intel.x: test.o 
+	@echo Linking $@ against $^ ...
+	$(FCLINKER) -o $@ $^ $(SCALAPACK_LIB) $(OPTS)
+
+%.o: %.f90
+	@echo Compiling $@ ...
+	$(FC) -o $@ -c $< -fPIC $(OPTLV) $(OPTS)
+
+.PHONY: clean
+clean:
+	-rm -f test.o cmd_args.mod
+
+.PHONY: veryclean
+veryclean: clean
+	-rm -f test.intel.x
+
