@@ -79,6 +79,7 @@ program main
 
     ! for MPI
     logical :: initialized, finalized
+    integer :: required, provided
 
     ! for time
     double precision :: t0, tt, dt
@@ -93,7 +94,15 @@ program main
         stop 1
     end if
     if (.not. initialized) then
-        call mpi_init(status)
+        ! required = MPI_THREAD_SINGLE
+        required = MPI_THREAD_FUNNELED
+        ! required = MPI_THREAD_SERIALIZED
+        ! required = MPI_THREAD_MULTIPLE
+        call mpi_init_thread(required, provided, status)
+        if (provided < required) then
+            write(0, '(a)') "Insufficient MPI thread support"
+            stop 1
+        end if
         if (status /= 0) then
             write(0, '(a)') "MPI initialization failed."
             stop 1

@@ -1,4 +1,4 @@
-# module load lapack/3.12.0 openmpi/4.1.1 scalapack/2.2.0 
+# module load openblas/0.3.23 openmpi/4.1.6 scalapack/2.2.0-openblas
 SHELL = bash
 FC := mpifort
 FCLINKER := $(FC)
