@@ -1,3 +1,4 @@
 *.o
 *.mod
 other_examples/*
+test*.x
