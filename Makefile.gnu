@@ -12,17 +12,19 @@ else
 	OPTLV := -O2
 endif
 SCALAPACK_LIB := -l scalapack
+OPENMP_LIB := -fopenmp
+MACROS := -cpp
 
 .PHONY: all
 all: test.gnu.x
 
 test.gnu.x: test.o 
 	@echo Linking $@ against $^ ...
-	$(FCLINKER) -o $@ $^ $(SCALAPACK_LIB) $(OPTS)
+	$(FCLINKER) -o $@ $^ $(SCALAPACK_LIB) $(OPTS) $(MACROS) $(OPENMP_LIB)
 
 %.o: %.f90
 	@echo Compiling $@ ...
-	$(FC) -o $@ -c $< -fPIC $(OPTLV) $(OPTS) -ffpe-summary=none
+	$(FC) -o $@ -c $< -fPIC $(OPTLV) $(OPTS) -ffpe-summary=none $(MACROS) $(OPENMP_LIB)
 
 .PHONY: clean
 clean:

@@ -41,6 +41,10 @@ end module cmd_args
 
 program main
     use mpi
+    use omp_lib
+#ifdef __INTEL_COMPILER
+    use mkl_service
+#endif
     use cmd_args
     implicit none
 
@@ -138,6 +142,13 @@ program main
     end if
     m = n
     if (mypnum == 0) then
+#ifdef __INTEL_COMPILER
+        write(*, '(a, i0, a, i0, a)') "Using ", nprocs, " MPI processes, each contains ", &
+            mkl_get_max_threads(), " OpenMP threads."
+#else
+        write(*, '(a, i0, a, i0, a)') "Using ", nprocs, " MPI processes, each contains ", &
+            omp_get_max_threads(), " OpenMP threads."
+#endif
         write(*, '(a, i0, a, i0)') "matrix size is ", m, " by ", n
     end if
 

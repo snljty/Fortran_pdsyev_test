@@ -11,18 +11,22 @@ else
 	OPTS := -s
 	OPTLV := -O2
 endif
-SCALAPACK_LIB := -qmkl=cluster
+# note!!! note!!! note!!!
+# a simple -qmkl=cluster -qopenmp is not available, as it will not link -l iomp5 -l pthread, and link -l mkl_sequential instead of -l mkl_intel_thread . use -# to check for details.
+SCALAPACK_INCPATH := -I $(MKLROOT)/include/intel64/lp64
+SCALAPACK_LIB := -l mkl_scalapack_lp64 -l mkl_intel_lp64 -l mkl_core -l mkl_intel_thread -l mkl_blacs_intelmpi_lp64 -l iomp5 -l pthread -l m
+MACROS := -fpp
 
 .PHONY: all
 all: test.intel.x
 
 test.intel.x: test.o 
 	@echo Linking $@ against $^ ...
-	$(FCLINKER) -o $@ $^ $(SCALAPACK_LIB) $(OPTS)
+	$(FCLINKER) -o $@ $^ $(SCALAPACK_LIB) $(OPTS) $(MACROS)
 
 %.o: %.f90
 	@echo Compiling $@ ...
-	$(FC) -o $@ -c $< -fPIC $(OPTLV) $(OPTS)
+	$(FC) -o $@ -c $< -fPIC $(OPTLV) $(OPTS) $(SCALAPACK_INCPATH) $(MACROS)
 
 .PHONY: clean
 clean:
