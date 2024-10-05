@@ -129,6 +129,7 @@ program main
     end if
     m = n
     if (mypnum == 0) then
+        write(*, '(a, i0, a)') "Using ", nprocs, " MPI processes"
         write(*, '(a, i0, a, i0)') "matrix size is ", m, " by ", n
     end if
 
